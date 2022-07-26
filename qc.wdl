@@ -56,6 +56,7 @@ task qc_bam {
   Int machine_mem_gb
   Int disk_space_gb
   Boolean use_ssd
+  String pairedORsingle
 
   command {
     fastqc -t $nthread -o ${outdir} ${bam}
@@ -74,6 +75,7 @@ task qc_bam {
 }
 
 task gatherbam {
+
   Array[Array[File]] outfile
   Array[String] bam_name
   Array[File] newoutfile = flatten(outfile)
@@ -84,6 +86,7 @@ task gatherbam {
   Int machine_mem_gb
   Int disk_space_gb
   Boolean use_ssd
+  String pairedORsingle
 
   command {
     tar czf ${outdir}.tar.gz ${outdir}
@@ -96,6 +99,6 @@ task gatherbam {
   }
 
   output {
-    File outfile = "${outdir}.tar.gz"
+    File finaloutfile = "${outdir}.tar.gz"
   }
 }
