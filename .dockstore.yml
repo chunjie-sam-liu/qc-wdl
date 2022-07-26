@@ -3,6 +3,6 @@ workflows:
   - subclass: WDL
     primaryDescriptorPath: /qc.wdl
     testParameterFiles:
-      - /test_qc.json
+      - /test_bam_default.json
     authors:
       - orcid: 0000-0002-3008-3375
