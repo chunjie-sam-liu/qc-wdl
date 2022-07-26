@@ -1,0 +1,10 @@
+{
+  "QC.inputFiles": ["a.bam", "b.bam"],
+  "QC.outdir": "outdir",
+  "QC.pairedORsingle": "paired",
+  "QC.threads": 10,
+  "QC.machine_mem_gb": 4,
+  "QC.disk_space_gb": 50,
+  "QC.use_ssd": false,
+  "QC.docker_image": "biocontainers/fastqc"
+}
