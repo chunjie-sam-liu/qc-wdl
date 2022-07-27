@@ -91,9 +91,10 @@ task gatherbam {
 
   command {
     mkdir ${outdir}
-    for (i in 0..(newnewoutfile | length)) {
-      cp ${newnewoutfile[i]} ${outdir}
-    }
+    for file in ${sep=" " newnewoutfile};
+    do
+      cp $file ${outdir}
+    done
     tar czf ${outdir}.tar.gz ${outdir}
   }
 
