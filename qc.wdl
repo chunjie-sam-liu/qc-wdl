@@ -59,9 +59,9 @@ task qc_bam {
   String pairedORsingle
 
   command {
-    mkdir cj_qc_bam
-    # fastqc -t $nthread -o ${outdir} ${bam}
-    fastqc -t $nthread -o cj_qc_bam ${bam}
+    # mkdir cj_qc_bam
+    fastqc -t $nthread -o ${outdir} ${bam}
+    # fastqc -t $nthread -o cj_qc_bam ${bam}
   }
 
   runtime {
@@ -71,7 +71,7 @@ task qc_bam {
   }
 
   output {
-    Array[File] outfile = glob("*_fastqc.zip")
+    Array[File] outfile = glob("${outdir}/*_fastqc.zip")
     String bam_name = basename("${bam}")
   }
 }
