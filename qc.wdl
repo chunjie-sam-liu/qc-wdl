@@ -59,9 +59,8 @@ task qc_bam {
   String pairedORsingle
 
   command {
-    # mkdir cj_qc_bam
-    fastqc -t $nthread -o ${outdir} ${bam}
-    # fastqc -t $nthread -o cj_qc_bam ${bam}
+    mkdir ${outdir}
+    fastqc -t ${nthread} -o ${outdir} ${bam}
   }
 
   runtime {
