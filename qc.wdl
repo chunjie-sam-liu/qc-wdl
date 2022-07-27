@@ -90,6 +90,10 @@ task gatherbam {
   String pairedORsingle
 
   command {
+    mkdir ${outdir}
+    for (i in 0..(newnewoutfile | length)) {
+      cp ${newnewoutfile[i]} ${outdir}
+    }
     tar czf ${outdir}.tar.gz ${outdir}
   }
 
