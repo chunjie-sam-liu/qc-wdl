@@ -77,7 +77,7 @@ fastqcdatas <- list.files(
 #     .f = fn_loaddata
 #   ) %>% 
 #   dplyr::bind_rows() ->
-  
+length(fastqcdatas)
 
 parallelMap::parallelStartSocket(25)
 parallelMap::parallelLibrary("magrittr")
@@ -90,8 +90,22 @@ fastqcdatas_loaded %>%
   dplyr::bind_rows() ->
   readlength_dist
 
+readlength_dist %>% 
+  dplyr::group_by(readlength) %>% 
+  dplyr::count()
+
+readlength_dist %>% 
+  dplyr::filter(readlengthmode == 101)
+
+readlength_dist %>% 
+  dplyr::group_by(readlength) %>% 
+  dplyr::count()
 
 readlength_dist %>% 
   dplyr::group_by(readlengthmode) %>% 
   dplyr::count() 
 
+
+# save image --------------------------------------------------------------
+
+save.image(file = "data/readlength.rda")
