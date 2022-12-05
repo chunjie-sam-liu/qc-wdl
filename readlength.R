@@ -105,6 +105,19 @@ readlength_dist %>%
   dplyr::group_by(readlengthmode) %>% 
   dplyr::count() 
 
+readlength_dist %>% 
+  dplyr::group_by(tissue) %>% 
+  dplyr::count() %>% 
+  dplyr::arrange(-n)
+
+
+readlength_dist %>% 
+  dplyr::select(1, 2, 4) %>% 
+  readr::write_tsv(
+    file = "/home/liuc9/scratch/bam-qc/gtexv8_rna_seq_readlength.tsv"
+  )
+
+
 
 # save image --------------------------------------------------------------
 
