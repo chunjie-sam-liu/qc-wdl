@@ -5,7 +5,8 @@
 # @DESCRIPTION:
 
 # Number of input parameters
-outdir="/scr1/users/liuc9/bam-qc"
+# outdir="/scr1/users/liuc9/bam-qc"
+outdir="/home/liuc9/scratch/mitochondrial/GTExv8-reads-ratio/GTExv8-idxstats"
 
 targz=$(ls ${outdir}/*.tar.gz)
 
