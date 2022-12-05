@@ -1,8 +1,8 @@
 version: 1.2
 workflows:
   - subclass: WDL
-    primaryDescriptorPath: /qc.wdl
+    primaryDescriptorPath: /idxstats.wdl
     testParameterFiles:
-      - /test_bam_default.json
+      - /idxstats_test_bam_default.json
     authors:
       - orcid: 0000-0002-3008-3375
