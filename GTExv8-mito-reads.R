@@ -174,9 +174,8 @@ forp1 %>%
   ggplot(aes(x = samplename, y = 1, fill = tissue)) +
   geom_col(width = 1, show.legend = FALSE) +
   scale_fill_manual(
-    values = color_gtexv8_tissues$color1
+    values = color_gtexv8_tissues$color_hex
   ) +
-  
   scale_x_discrete(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
   theme(
@@ -210,19 +209,19 @@ tissue_reads_ratio_rename_forplot %>%
     # plot.margin = unit(c(0, 0, 0.01, 0), units = "npc")
   ) +
   labs(
-    y = "Ratio"
+    y = "Reads mapping ratio"
   ) ->
   p2;p2
 
 
-layout <- c(
-  area(t = 1, l = 1, b = 29, r = 30),
-  area(t = 30, l = 1, b = 30, r = 30)
-)
-
-p2/p1 + plot_layout(
-  design = layout,
-)
+# layout <- c(
+#   area(t = 1, l = 1, b = 29, r = 30),
+#   area(t = 30, l = 1, b = 30, r = 30)
+# )
+# 
+# p2/p1 + plot_layout(
+#   design = layout,
+# )
 
 p <- p2 / plot_spacer() / p1 + plot_layout(
   heights = c(40, -1.15, 1)
@@ -233,8 +232,8 @@ ggsave(
   plot = p,
   device = "pdf",
   path = "/home/liuc9/scratch/mitochondrial/GTExv8-reads-ratio",
-  width = 10,
-  height = 10
+  width = 15,
+  height = 8
 )
 
 # cowplot::plot_grid(
