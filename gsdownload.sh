@@ -25,7 +25,7 @@
 
 ## Download samtools idxstats file.
 bucket="fc-secure-d02ae31a-ab6d-4003-9904-3f5a1a03453c"
-submissionid="efad9daa-1671-4ba6-906a-5b281e70e6f8"
+submissionid="332b5f2a-0acf-425f-86fa-5c1fd56638a8"
 outdir="/home/liuc9/scratch/mitochondrial/GTExv8-reads-ratio/GTExv8-idxstats"
 
 gzfiles=$(gsutil ls gs://${bucket}/submissions/${submissionid}/IDXSTATS/*/call-gather_idxstats/*.tar.gz)
