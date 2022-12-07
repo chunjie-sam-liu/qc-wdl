@@ -109,12 +109,17 @@ tissue_reads %>%
                     x = chrom
                   )) %>% 
                   dplyr::select(chrom, ratio) %>% 
-                  dplyr::mutate(chrom = ifelse(chrom == "*", "unmapped", chrom)) 
-                
+                  dplyr::mutate(chrom = ifelse(chrom == "*", "unmapped", chrom)) ->
+                  .mm
+                tibble::tibble(
+                  totalreads = .totalreads,
+                  ratio = list(.mm)
+                )
               }
             )
           ) %>% 
           dplyr::select(-mappedreads) %>% 
+          tidyr::unnest(cols = ratio) %>% 
           tidyr::unnest(cols = ratio)
       }
     )
@@ -142,7 +147,8 @@ tissue_reads_ratio %>%
 tissue_reads_ratio_rename %>% 
   dplyr::filter(xchrom == "chrM") %>% 
   dplyr::group_by(tissue) %>% 
-  dplyr::arrange(-ratio) ->
+  dplyr::arrange(-ratio) %>% 
+  dplyr::ungroup() ->
   samplerank
 
 tissue_reads_ratio_rename %>% 
@@ -182,7 +188,7 @@ forp1 %>%
     axis.text = element_blank(),
     axis.title = element_blank(),
     axis.ticks = element_blank(),
-    # plot.margin = unit(c(0, 0, 0, 0), units = "npc")
+    panel.grid = element_blank()
   ) ->
   p1;p1
 
@@ -194,7 +200,10 @@ tissue_reads_ratio_rename_forplot %>%
   )) +
   geom_col(width = 1) +
   scale_x_discrete(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)) +
+  scale_y_continuous(
+    expand = expansion(mult = c(0, 0.005)),
+    breaks = seq(0, 1, 0.1)
+  ) +
   scale_fill_manual(
     values = ggsci::pal_aaas()(3)[c(3, 1, 2)],
     name = "Mapping",
@@ -203,10 +212,12 @@ tissue_reads_ratio_rename_forplot %>%
   theme(
     axis.text.x = element_blank(),
     axis.ticks.x = element_blank(),
-    panel.background = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(color = "black", fill = NA),
     legend.position = "top",
     axis.title.x = element_blank(),
-    # plot.margin = unit(c(0, 0, 0.01, 0), units = "npc")
+    axis.title = element_text(size = 16, face = "bold"),
+    axis.text.y = element_text(size = 10, color = "black")
   ) +
   labs(
     y = "Reads mapping ratio"
@@ -223,6 +234,14 @@ tissue_reads_ratio_rename_forplot %>%
 #   design = layout,
 # )
 
+# cowplot::plot_grid(
+#   plotlist = list(p2, p1),
+#   align = 'v',
+#   ncol = 1,
+#   rel_heights = c(1, 0.05)
+# )
+
+
 p <- p2 / plot_spacer() / p1 + plot_layout(
   heights = c(40, -1.15, 1)
 )
@@ -236,12 +255,142 @@ ggsave(
   height = 8
 )
 
-# cowplot::plot_grid(
-#   plotlist = list(p2, p1),
-#   align = 'v',
-#   ncol = 1,
-#   rel_heights = c(1, 0.05)
-# )
+
+# dot plot ----------------------------------------------------------------
+
+
+tissue_reads_ratio_rename %>% 
+  dplyr::filter(xchrom == "chrM") %>% 
+  dplyr::mutate(tissue = factor(
+    x = tissue, 
+    levels = color_gtexv8_tissues$tissue
+  )) %>% 
+  dplyr::mutate(totalreads = totalreads / 10^8) ->
+  tissue_reads_ratio_rename_dot
+
+tissue_reads_ratio_rename_dot %>% 
+  dplyr::mutate(tissue = as.character(tissue)) %>% 
+  dplyr::group_by(tissue) %>% 
+  dplyr::summarise(m = median(ratio)) %>% 
+  dplyr::arrange(-m)  ->
+  tissue_reads_ratio_rename_dot_tissue_rank
+
+
+tissue_reads_ratio_rename_dot %>% 
+  dplyr::mutate(tissue = factor(
+    x = tissue,
+    levels = tissue_reads_ratio_rename_dot_tissue_rank$tissue
+  )) %>% 
+  ggplot(aes(x = tissue, y = ratio, color = tissue)) +
+  geom_boxplot(width = 0.7, outlier.colour = NA) +
+  geom_jitter(alpha=0.5,size=0.5,width = 0.2) +
+  geom_smooth(
+    mapping = aes(
+      x = as.numeric(tissue),
+      y = m,
+    ),
+    data = tissue_reads_ratio_rename_dot_tissue_rank %>% 
+      dplyr::mutate(tissue = factor(
+        x = tissue, 
+        levels = tissue_reads_ratio_rename_dot_tissue_rank$tissue
+      )),
+    method = "loess",
+    se = FALSE,
+    color = "red",
+    show.legend = FALSE,
+    size = 1,
+    linetype = "dotted"
+  ) +
+  scale_color_manual(
+    name = "Tissue",
+    values = color_gtexv8_tissues %>%
+      dplyr::slice(match(tissue_reads_ratio_rename_dot_tissue_rank$tissue, tissue)) %>%
+      dplyr::pull(color_hex),
+    guide = guide_legend(
+      ncol = 3
+    )
+  ) +
+  scale_y_continuous(
+    expand = expansion(mult = c(0.01, 0.2)),
+    breaks = seq(0, 1, 0.1)
+  ) +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = NA, color = "black"),
+    legend.position = c(0.7, 0.75),
+    legend.background = element_blank(), # element_rect(color = "red"),
+    legend.key = element_blank(),
+    legend.key.size = unit(x = 16, units = "points"),
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    axis.title = element_text(size = 16, face = "bold"),
+    axis.text.y = element_text(size = 10, color = "black")
+  ) +
+  labs(
+    x = "Tissue",
+    y = "Mitochondrial reads mapping ratio"
+  ) ->
+  mito_boxplot;mito_boxplot
+
+ggsave(
+  filename = "GTExv8-RNAseq-mito-reads-distribution-boxplot.pdf",
+  plot = mito_boxplot,
+  device = "pdf",
+  path = "/home/liuc9/scratch/mitochondrial/GTExv8-reads-ratio",
+  width = 15,
+  height = 8
+)
+
+
+
+
+tissue_reads_ratio_rename_dot %>% 
+  ggplot(aes(x = totalreads, y = ratio, color = tissue)) +
+  geom_point() +
+  scale_color_manual(
+    name = NULL,
+    values = color_gtexv8_tissues$color_hex,
+    guide = guide_legend(
+      ncol = 2
+    )
+  ) +
+  scale_y_continuous(
+    expand = expansion(mult = c(0.01, 0.2)),
+    breaks = seq(0, 1, by = 0.1)
+  ) +
+  scale_x_continuous(
+    expand = expansion(mult = c(0.03, 0.08)),
+    breaks = seq(0, 10, by = 1)
+  ) +
+  theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = NA, color = "black"),
+    legend.background = element_blank(),
+    legend.key = element_blank(),
+    legend.key.size = unit(x = 16, units = "points"),
+    legend.text = element_text(size = 10),
+    legend.title = element_blank(),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 10, color = "black")
+  ) +
+  labs(
+    x = latex2exp::TeX("Total mapping reads ($x 10^8$)"),
+    y = "Mitochondrial reads mapping ratio"
+  ) ->
+  mito_dot
+
+ggsave(
+  filename = "GTExv8-RNAseq-mito-reads-distribution-dotplot.pdf",
+  plot = mito_dot,
+  device = "pdf",
+  path = "/home/liuc9/scratch/mitochondrial/GTExv8-reads-ratio",
+  width = 15,
+  height = 8
+)
+
+
 # footer ------------------------------------------------------------------
 
 future::plan(future::sequential)
