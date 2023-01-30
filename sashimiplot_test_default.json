@@ -7,5 +7,6 @@
   "IDXSTATS.nthread": 10,
   "IDXSTATS.use_ssd": false,
   "IDXSTATS.outdir": "outdir",
-  "IDXSTATS.gtf": "gtf"
+  "IDXSTATS.gtf": "gtf",
+  "IDXSTATS.input_bams": "input_bams.tsv"
 }

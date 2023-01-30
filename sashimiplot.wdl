@@ -1,6 +1,7 @@
 workflow IDXSTATS {
   Array[File] inputFiles
   File gtf
+  File input_bams
   String outdir
 
   String pairedORsingle = "paired"
@@ -17,6 +18,7 @@ workflow IDXSTATS {
     input:
       bams = inputFiles,
       gtf = gtf,
+      input_bams = input_bams,
       outdir = outdir,
       pairedORsingle = pairedORsingle,
       nthread = nthread,
@@ -37,6 +39,7 @@ workflow IDXSTATS {
 task sashimiplot {
   File bams
   File gtf
+  File input_bams
   String docker_image
   String outdir
   Int nthread
@@ -47,8 +50,7 @@ task sashimiplot {
   # String bamname = basename(bam, ".bam")
 
   command {
-    # samtools idxstats --threads=${nthread} ${bam} > ${bamname}.idxstats
-    /ggsashimi.py -b input_bams.tsv -c chr2:202141549-202150040 -g ${gtf} -M 10 -C 3 -O 3 -A mean --shrink --alpha 0.25 --base-size=20 --ann-height=4 --height=3 --width=18 -P palette.txt -o ggsashimiplot.pdf
+    /ggsashimi.py -b ${input_bams} -c chr2:201276826-201285317 -g ${gtf} -M 10 -C 3 -O 3 -A mean --shrink --alpha 0.25 --base-size=20 --ann-height=4 --height=3 --width=18 -P palette.txt -o ggsashimiplot.pdf
     mkdir ${outdir}
     cp ggsashimiplot.pdf ${outdir}
     tar czf ${outdir}.tar.gz ${outdir}
