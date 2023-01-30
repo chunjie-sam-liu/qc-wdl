@@ -3,7 +3,7 @@
   "IDXSTATS.disk_space_gb": 80,
   "IDXSTATS.machine_mem_gb": 10,
   "IDXSTATS.inputFiles": ["a.bam", "b.bam"],
-  "IDXSTATS.docker_image": "biocontainers/samtools",
+  "IDXSTATS.docker_image": "guigolab/ggsashimi",
   "IDXSTATS.nthread": 10,
   "IDXSTATS.use_ssd": false,
   "IDXSTATS.outdir": "outdir",

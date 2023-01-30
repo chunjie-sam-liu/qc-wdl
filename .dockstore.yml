@@ -1,8 +1,8 @@
 version: 1.2
 workflows:
   - subclass: WDL
-    primaryDescriptorPath: /idxstats.wdl
+    primaryDescriptorPath: /sashimiplot.wdl
     testParameterFiles:
-      - /idxstats_test_bam_default.json
+      - /sashimiplot_test_default.json
     authors:
       - orcid: 0000-0002-3008-3375
