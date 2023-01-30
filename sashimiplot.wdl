@@ -37,7 +37,7 @@ workflow IDXSTATS {
 }
 
 task sashimiplot {
-  File bams
+  Array[File] bams
   File gtf
   File input_bams
   String docker_image
@@ -50,7 +50,7 @@ task sashimiplot {
   # String bamname = basename(bam, ".bam")
 
   command {
-    /ggsashimi.py -b ${input_bams} -c chr2:201276826-201285317 -g ${gtf} -M 10 -C 3 -O 3 -A mean --shrink --alpha 0.25 --base-size=20 --ann-height=4 --height=3 --width=18 -P palette.txt -o ggsashimiplot.pdf
+    /ggsashimi.py -b ${input_bams} -c chr2:201276826-201285317 -g ${gtf} -M 10 -C 3 -O 3 -A mean --shrink --alpha 0.25 --base-size=20 --ann-height=4 --height=3 --width=18 -o ggsashimiplot.pdf
     mkdir ${outdir}
     cp ggsashimiplot.pdf ${outdir}
     tar czf ${outdir}.tar.gz ${outdir}
