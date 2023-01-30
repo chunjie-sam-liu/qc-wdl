@@ -256,7 +256,9 @@ ggsave(
 )
 
 
-# dot plot ----------------------------------------------------------------
+
+# Boxplot -----------------------------------------------------------------
+
 
 
 tissue_reads_ratio_rename %>% 
@@ -343,6 +345,17 @@ ggsave(
   height = 8
 )
 
+
+
+# Dot correlation plot ----------------------------------------------------
+
+
+
+cor.test(
+  ~ ratio + totalreads,
+  data = tissue_reads_ratio_rename_dot %>% 
+    dplyr::filter(tissue != "Whole_Blood")
+)
 
 
 
